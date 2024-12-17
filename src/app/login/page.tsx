@@ -1,3 +1,5 @@
+import { saveSession } from "@/utils/session";
+
 export async function loginAction(formData : FormData) {
   'use server';
 
@@ -14,6 +16,7 @@ export async function loginAction(formData : FormData) {
   if (response.ok) {
     const {token} = await response.json();
     console.log (token);
+    await saveSession(token);
   }
 
 }

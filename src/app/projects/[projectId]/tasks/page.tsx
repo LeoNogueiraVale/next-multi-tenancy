@@ -1,16 +1,18 @@
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
-import { getSession } from "@/utils/session";
+import { getSession, getUser } from "@/utils/session";
 
 
 export async function getTasks (projectId: any){
   const session = await getSession();
+  const user = await getUser();
   const response = await fetch(`http://localhost:8000/projects/${projectId}/tasks`, {
     headers: {
       Authorization: `Bearer ${session.token}`,
+      "X-Tenant-Id":user!.tenantId,
     },
     cache : 'force-cache',
     next: {
-      tags: [`project-${projectId}-tasks`]
+      tags: [`project-${projectId}-tasks`],
     }
   },
 );
@@ -29,7 +31,7 @@ export async function addTaskAction (formData: FormData){
       method:'POST',
       headers: {
         'Content-Type' : 'application/json',
-        Authorization: `Bearer ${session.token}`
+        Authorization: `Bearer ${session.token}`,
       },
       body: JSON.stringify({title, description}),
     })

@@ -1,14 +1,16 @@
-import { getSession } from "@/utils/session";
+import { getSession, getUser } from "@/utils/session";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
 export async function getProjects (){
   const session = await getSession();
+  const user = await getUser();
   const response = await fetch('http://localhost:8000/projects', {
     headers: {
       Authorization: `Bearer ${session.token}`,
+      "X-Tenant-Id":user!.tenantId,
     }
-  })
+  });
   return response.json();
 
 }
@@ -31,7 +33,7 @@ export async function addProjectAction (formData: FormData){
 
 
 export async  function DashboardPage() {
-  const projects = getProjects();
+  const projects = await getProjects();
 
   return (
     <div className="m-4">

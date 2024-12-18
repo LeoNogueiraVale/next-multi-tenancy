@@ -7,8 +7,14 @@ export async function getTasks (projectId: any){
   const response = await fetch(`http://localhost:8000/projects/${projectId}/tasks`, {
     headers: {
       Authorization: `Bearer ${session.token}`,
+    },
+    cache : 'force-cache',
+    next: {
+      tags: [`project-${projectId}-tasks`]
     }
-  })
+  },
+);
+
   return response.json();
 
 
@@ -27,7 +33,7 @@ export async function addTaskAction (formData: FormData){
       },
       body: JSON.stringify({title, description}),
     })
-    revalidatePath(`/projects/${projectId}/tasks`);
+    revalidateTag(`/project-${projectId}-tasks`);
 }
 
 

@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { saveSession } from "@/utils/session";
+//import { redirect } from "next/dist/server/api-utils";
 
 export async function loginAction(formData : FormData) {
   'use server';
@@ -17,6 +19,7 @@ export async function loginAction(formData : FormData) {
     const {token} = await response.json();
     console.log (token);
     await saveSession(token);
+    redirect("/");
   }
 
 }

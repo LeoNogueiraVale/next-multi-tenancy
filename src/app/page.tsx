@@ -1,4 +1,6 @@
 import { getSession } from "@/utils/session";
+import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 export async function getProjects (){
   const session = await getSession();
@@ -24,6 +26,7 @@ export async function addProjectAction (formData: FormData){
     },
     body: JSON.stringify({name}),
   })
+  revalidatePath('/');
 }
 
 

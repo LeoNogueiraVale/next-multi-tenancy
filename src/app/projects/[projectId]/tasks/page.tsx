@@ -1,4 +1,41 @@
-export function TasksPage(){
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { getSession } from "@/utils/session";
+
+
+export async function getTasks (projectId: any){
+  const session = await getSession();
+  const response = await fetch(`http://localhost:8000/projects/${projectId}/tasks`, {
+    headers: {
+      Authorization: `Bearer ${session.token}`,
+    }
+  })
+  return response.json();
+
+
+}
+
+export async function addTaskAction (formData: FormData){
+  'use server';
+
+  const {projectId, title, description} = Object.fromEntries(formData);
+    const session = await getSession();
+    await fetch(`http://localhost:8000/projects/${projectId}/tasks`, {
+      method:'POST',
+      headers: {
+        'Content-Type' : 'application/json',
+        Authorization: `Bearer ${session.token}`
+      },
+      body: JSON.stringify({title, description}),
+    })
+    revalidatePath(`/projects/${projectId}/tasks`);
+}
+
+
+
+export async function TasksPage({params,} : {params: Promise<{projectId:string}>}){
+const {projectId} = await params;
+const tasks = await getTasks(projectId);
+
   return (
     <div className="m-4">
       <h1 className="text-2xl font-bold mb-4">Tasks</h1>
@@ -28,3 +65,5 @@ export function TasksPage(){
     </div>
   );
 }
+
+export default TasksPage;
